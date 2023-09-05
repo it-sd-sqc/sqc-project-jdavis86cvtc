@@ -20,5 +20,5 @@ A project to be able to track custom note categories.
 
 ## Proposed Layout
 
-![Mobile Layout](link_to_rendered_image.png)
+![Mobile Layout](Mobile_Layout.png)
 
