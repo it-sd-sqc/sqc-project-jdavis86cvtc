@@ -1,24 +1,12 @@
-# Project Proposal: Note Taking and Tracking System
+# A Look at Go
+This site introduces how to play the board game Go.
 
-A project to be able to track custom note categories.
+-- Data source --
+[The Game of Go: The National Game of Japan by Arthur Smith](https://www.gutenberg.org/ebooks/66632)
 
-## Data Source
+-- Items of interest --
+• chapters
+• problems
 
-[The Early History of the Airplane](https://www.gutenberg.org/ebooks/25420)[ by Orville Wright](https://www.gutenberg.org/ebooks/author/31323)
-
-## Items of Interest
-
-- Chapters
-- Pages
-- Definitions
-- Pictures
-- Charachters
-- Textbook review points
-- Chapter notes
-- Quotes
-- Forshadowing/guesses
-
-## Proposed Layout
-
-![Mobile Layout](Mobile_Layout.png)
-
+-- Proposed layout --
+![Alt text](../layout.svg "sample layout")
