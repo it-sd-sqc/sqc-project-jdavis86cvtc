@@ -14,14 +14,13 @@ file.
 ***********************************************************/
 
 // Dependencies ////////////////////////////////////////////
-import {strict as assert} from 'node:assert';
-import {closeSync, openSync, readFileSync, writeFileSync} from 'node:fs';
-import {parse} from 'node-html-parser';
-
+import { strict as assert } from 'node:assert'
+import { closeSync, openSync, readFileSync, writeFileSync } from 'node:fs'
+import { parse } from 'node-html-parser'
 
 // Configuration ///////////////////////////////////////////
-const srcPath = 'C:/Users/jaspe/Documents/CVTC/SQC/sqc-project-jdavis86cvtc/data/Economic-Consequences.html';
-const dstPath = 'C:/Users/jaspe/Documents/CVTC/SQC/sqc-project-jdavis86cvtc/docs/generated-schema.sql';
+const srcPath = 'C:/Users/jaspe/Documents/CVTC/SQC/sqc-project-jdavis86cvtc/data/Economic-Consequences.html'
+const dstPath = 'C:/Users/jaspe/Documents/CVTC/SQC/sqc-project-jdavis86cvtc/docs/generated-schema.sql'
 const chapterIds = [
   'introduction',
   'ch1',
@@ -30,10 +29,10 @@ const chapterIds = [
   'ch4',
   'ch5',
   'ch6',
-  'ch7',
-];
+  'ch7'
+]
 
-const problemChapterId = 'ch8';
+const problemChapterId = 'ch8'
 
 const sqlHeader = `\\encoding UTF8
 
@@ -53,97 +52,92 @@ CREATE TABLE cost (
 );
 
 INSERT INTO chapters (title, body) VALUES
-`;
+`
 
 const insertProblemTypesSql = `INSERT INTO cost(supplier, amount) VALUES
-`;
+`
 
 const insertProblemsSql = `INSERT INTO problems (problem_type_id,  number, to_play, problem, solutions) VALUES
-`;
+`
 
 const gobanConfig = {
   size: 19,
   theme: 'classic',
   coordSystem: 'A1',
   noMargin: false,
-  hideMargin: false,
-};
+  hideMargin: false
+}
 
 // Utility functions ///////////////////////////////////////
 const extractTitle = function (root) {
-  const title = root.querySelector (`h1`).text;
-  return title;
-};
+  const title = root.querySelector('h1').text
+  return title
+}
 
 const extractBody = function (root, id, pruneChildrenSelector) {
-  const bodyNode = root.querySelector (`body`);
+  const bodyNode = root.querySelector('body')
 
   if (pruneChildrenSelector) {
-    const children = bodyNode.querySelectorAll (pruneChildrenSelector);
-    children.forEach (child => {
-      child.remove ();
-    });
+    const children = bodyNode.querySelectorAll(pruneChildrenSelector)
+    children.forEach(child => {
+      child.remove()
+    })
   }
 
   // The <img> tags point to the wrong directory, so we
   // need to change them here.
-  bodyNode.querySelectorAll ('img').forEach (image => {
-    const oldSrc = image.getAttribute ('src');
-    const oldSrcTokens = oldSrc.split ('/');
-    const newSrc = `/images/book/${oldSrcTokens[oldSrcTokens.length - 1]}`;
-    image.setAttribute ('src', newSrc);
-  });
+  bodyNode.querySelectorAll('img').forEach(image => {
+    const oldSrc = image.getAttribute('src')
+    const oldSrcTokens = oldSrc.split('/')
+    const newSrc = `/images/book/${oldSrcTokens[oldSrcTokens.length - 1]}`
+    image.setAttribute('src', newSrc)
+  })
 
   // Return HTML with the line endings normalized to Unix.
-  bodyNode.innerHTML = bodyNode.innerHTML.replaceAll ('\r\n', '\n');
-  bodyNode.innerHTML = bodyNode.innerHTML.trim ();
-  return bodyNode;
-};
-
+  bodyNode.innerHTML = bodyNode.innerHTML.replaceAll('\r\n', '\n')
+  bodyNode.innerHTML = bodyNode.innerHTML.trim()
+  return bodyNode
+}
 
 // Conversion //////////////////////////////////////////////
-const src = readFileSync (srcPath, 'utf8');
-const domRoot = parse (src);
+const src = readFileSync(srcPath, 'utf8')
+const domRoot = parse(src)
 
+const chapters = []
 
-const chapters = [];
-
-chapterIds.forEach (id => {
+chapterIds.forEach(id => {
   // Extract the title
-  const title = extractTitle (domRoot); // Removed 'id' argument as it's not needed
-  const body = extractBody (domRoot, id);
+  const title = extractTitle(domRoot) // Removed 'id' argument as it's not needed
+  const body = extractBody(domRoot, id)
 
-  chapters.push ({
+  chapters.push({
     title,
-    body,
-  });
-});
-
+    body
+  })
+})
 
 // Extract the problems…
-const table = domRoot.querySelector('table');
-
+const table = domRoot.querySelector('table')
 
 // Extract and process data from table rows and cells.
-const tableRows = table.querySelectorAll ('tr');
-tableRows.forEach (row => {
-  const cells = row.querySelectorAll ('td');
+const tableRows = table.querySelectorAll('tr')
+tableRows.forEach(row => {
+  const cells = row.querySelectorAll('td')
   if (cells.length === 4) {
-    const country = cells[0].text;
-    const financialFigure = parseFloat (cells[2].text.replace (/[^0-9.]/g, ''));
+    const country = cells[0].text
+    const financialFigure = parseFloat(cells[2].text.replace(/[^0-9.]/g, ''))
     // Process and use this data as needed, e.g., generate SQL statements.
   }
-});
+})
 
 // Output the data as SQL.
-const fd = openSync (dstPath, 'w');
-writeFileSync (fd, sqlHeader);
-writeFileSync (fd, `('${chapters[0].title}', '${chapters[0].body}')`);
-chapters.slice (1).forEach (data => {
-  const value = `,\n('${data.title}', '${data.body}')`;
-  writeFileSync (fd, value);
-});
-writeFileSync (fd, ';\n\n');
+const fd = openSync(dstPath, 'w')
+writeFileSync(fd, sqlHeader)
+writeFileSync(fd, `('${chapters[0].title}', '${chapters[0].body}')`)
+chapters.slice(1).forEach(data => {
+  const value = `,\n('${data.title}', '${data.body}')`
+  writeFileSync(fd, value)
+})
+writeFileSync(fd, ';\n\n')
 
-closeSync (fd);
-
+closeSync(fd)
