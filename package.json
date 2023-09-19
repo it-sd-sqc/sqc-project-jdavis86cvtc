@@ -8,6 +8,7 @@
     "doc": "docs"
   },
   "scripts": {
+    "generate": "node tools/html-to-sql.js && -psql -U postgres -f ./docs/generated-schema.sql",
     "test": "standard \"**/*.js\" && stylelint \"**/*.css\" && html-validate \"public/**/*.html\""
   },
   "keywords": [],

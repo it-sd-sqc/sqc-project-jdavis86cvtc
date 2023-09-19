@@ -20,8 +20,8 @@ import {parse} from 'node-html-parser';
 
 
 // Configuration ///////////////////////////////////////////
-const srcPath = 'data/The-Early-History-of-the-Airplane.html';
-const dstPath = 'docs/generated-schema.sql';
+const srcPath = 'C:/Users/jaspe/Documents/CVTC/SQC/sqc-project-jdavis86cvtc/data/Economic-Consequences.html';
+const dstPath = 'C:/Users/jaspe/Documents/CVTC/SQC/sqc-project-jdavis86cvtc/docs/generated-schema.sql';
 const chapterIds = [
   'introduction',
   'ch1',
@@ -38,8 +38,7 @@ const problemChapterId = 'ch8';
 const sqlHeader = `\\encoding UTF8
 
 DROP TABLE IF EXISTS chapters;
-DROP TABLE IF EXISTS problem_types;
-DROP TABLE IF EXISTS problems;
+DROP TABLE IF EXISTS cost;
 
 CREATE TABLE chapters (
   id SERIAL PRIMARY KEY,
@@ -47,24 +46,16 @@ CREATE TABLE chapters (
   body TEXT NOT NULL
 );
 
-CREATE TABLE problem_types (
+CREATE TABLE cost (
   id SERIAL PRIMARY KEY,
-  name TEXT NOT NULL
-);
-
-CREATE TABLE problems (
-  id SERIAL PRIMARY KEY,
-  problem_type_id INT NOT NULL,
-  number TEXT NOT NULL,
-  to_play TEXT NOT NULL,
-  problem TEXT NOT NULL,
-  solutions TEXT NOT NULL
+  supplier TEXT NOT NULL,
+  amount TEXT NOT NULL
 );
 
 INSERT INTO chapters (title, body) VALUES
 `;
 
-const insertProblemTypesSql = `INSERT INTO problem_types (name) VALUES
+const insertProblemTypesSql = `INSERT INTO cost(supplier, amount) VALUES
 `;
 
 const insertProblemsSql = `INSERT INTO problems (problem_type_id,  number, to_play, problem, solutions) VALUES
@@ -79,13 +70,13 @@ const gobanConfig = {
 };
 
 // Utility functions ///////////////////////////////////////
-const extractTitle = function (root, id) {
-  const title = root.querySelector (`#${id} .main`).text;
+const extractTitle = function (root) {
+  const title = root.querySelector (`h1`).text;
   return title;
 };
 
 const extractBody = function (root, id, pruneChildrenSelector) {
-  const bodyNode = root.querySelector (`#${id} .divBody`);
+  const bodyNode = root.querySelector (`body`);
 
   if (pruneChildrenSelector) {
     const children = bodyNode.querySelectorAll (pruneChildrenSelector);
@@ -109,60 +100,17 @@ const extractBody = function (root, id, pruneChildrenSelector) {
   return bodyNode;
 };
 
-const extractMoves = function (output, player, moveSrc) {
-  // Remove newline.
-  const withDots = moveSrc.trim ();
-
-  // Remove periods.
-  const clean = withDots.replaceAll ('.', '');
-
-  const lines = clean.split (', ');
-  let currentLetter;
-
-  // Skip the first token.
-  for (let i = 1; i < lines.length; i++) {
-    if (lines[i].indexOf (' ') >= 0) {
-      const tokens = lines[i].split (' ');
-      currentLetter = tokens[0];
-      output[currentLetter + tokens[1]] = player;
-    } else {
-      // The line only contains a number.
-      output[currentLetter + lines[i]] = player;
-    }
-  }
-};
-
-const addSolution = function (problem, solutionSrc) {
-  const result = Object.assign ({}, problem.moves);
-  const markers = {};
-  const noNewline = solutionSrc.replaceAll ('\r\n', '');
-  const compact = noNewline.replaceAll (' ', '');
-
-  let move = 1;
-  let who = problem.toPlay;
-  const moves = compact.split (',');
-  moves.forEach (m => {
-    result[m] = who;
-    markers[m] = (move++).toString ();
-    who = who === 'white' ? 'black' : 'white';
-  });
-  problem.solutions.push (serialize (gobanConfig, result, markers));
-};
 
 // Conversion //////////////////////////////////////////////
 const src = readFileSync (srcPath, 'utf8');
 const domRoot = parse (src);
 
-// Remove pageNum nodes
-const pageNums = domRoot.querySelectorAll ('.pageNum');
-pageNums.forEach (element => element.remove ());
 
-// Extract guide chapters.
 const chapters = [];
 
 chapterIds.forEach (id => {
   // Extract the title
-  const title = extractTitle (domRoot, id);
+  const title = extractTitle (domRoot); // Removed 'id' argument as it's not needed
   const body = extractBody (domRoot, id);
 
   chapters.push ({
@@ -171,82 +119,20 @@ chapterIds.forEach (id => {
   });
 });
 
+
 // Extract the problems…
-const pRoot = domRoot.querySelector (`#${problemChapterId} .divBody`);
+const table = domRoot.querySelector('table');
 
-// First, extract the goals.
-const goals = [];
-const goalNodes = pRoot.querySelectorAll ('h3.main > span.sc');
-goalNodes.forEach (node => {
-  goals.push (node.text);
-});
-assert.equal (goals.length, 7, 'Expected seven goals.');
 
-// Second, extract each problem group that corresponds to a goal…
-const problemGroups = [];
-
-const groupNodes = pRoot.querySelectorAll ('.div2 > .divBody');
-const iTagRegExp = /<\/?i>/;
-let goalId = 1; // SQL ids start at 1.
-
-// …and then extract the problems from that group.
-groupNodes.forEach (node => {
-  const problems = [];
-  const descriptionNodes = node.querySelectorAll ('p:not([class])');
-  descriptionNodes.forEach (n => {
-    // All problem paragraphs have a single <br> tag.
-    if (!n.querySelector ('br')) return;
-
-    const number = n.querySelector ('b').text;
-    const toPlay = n.querySelector ('i').text.toLowerCase ();
-    const rows = n.innerHTML.replace (iTagRegExp, '');
-    const lines = rows.split ('<br>');
-    const moves = {};
-    extractMoves (moves, 'white', lines[0]);
-    extractMoves (moves, 'black', lines[1]);
-    const svg = serialize (gobanConfig, moves, {});
-    problems.push ({
-      goalId,
-      number,
-      toPlay,
-      moves,
-      problem: svg,
-      solutions: [],
-    });
-  });
-  // Skip the answer section.
-  if (problems.length > 0) problemGroups.push (problems);
-  goalId++;
-});
-assert.equal (problemGroups.length, 7, 'Expected seven problem groups.');
-
-// Finally, extract the solutions to each problem.
-const ors = /,? or /g;
-const sRoots = pRoot.querySelectorAll ('.div3');
-let groupId = 0;
-sRoots.forEach (node => {
-  const solutionNodes = node.querySelectorAll ('p');
-  let problemId = 0;
-  solutionNodes.forEach (n => {
-    if (!problemGroups[groupId][problemId]) return;
-
-    const noPeriods = n.text.split ('.');
-    const solutions = noPeriods[1].split (ors);
-
-    solutions.forEach (s => {
-      addSolution (problemGroups[groupId][problemId], s.trim ());
-    });
-    problemId++;
-  });
-
-  groupId++;
-});
-
-// Extract problem chapter text after extracting the
-// problems since we destructively alter the DOM.
-chapters.push ({
-  title: extractTitle (domRoot, problemChapterId),
-  body: extractBody (domRoot, problemChapterId, '.div2'),
+// Extract and process data from table rows and cells.
+const tableRows = table.querySelectorAll ('tr');
+tableRows.forEach (row => {
+  const cells = row.querySelectorAll ('td');
+  if (cells.length === 4) {
+    const country = cells[0].text;
+    const financialFigure = parseFloat (cells[2].text.replace (/[^0-9.]/g, ''));
+    // Process and use this data as needed, e.g., generate SQL statements.
+  }
 });
 
 // Output the data as SQL.
@@ -259,28 +145,5 @@ chapters.slice (1).forEach (data => {
 });
 writeFileSync (fd, ';\n\n');
 
-// Output the problem types.
-writeFileSync (fd, insertProblemTypesSql);
-writeFileSync (fd, `  ('${goals[0]}')`);
-goals.slice (1).forEach (data => {
-  const value = `,\n  ('${data}')`;
-  writeFileSync (fd, value);
-});
-writeFileSync (fd, ';\n\n');
-
-// Output the problems.
-problemGroups.forEach (problems => {
-  writeFileSync (fd, insertProblemsSql);
-  writeFileSync (
-    fd,
-    `  (${problems[0].goalId}, '${problems[0].number}', '${problems[0].toPlay}', '${problems[0].problem}', '${problems[0].solutions.join ('<p>OR</p>')}')`
-  );
-  problems.forEach (problem => {
-    writeFileSync (
-      fd,
-      `,\n  (${problem.goalId}, '${problem.number}', '${problem.toPlay}', '${problem.problem}', '${problem.solutions.join ('<p>OR</p>')}')`
-    );
-  });
-  writeFileSync (fd, ';\n\n');
-});
 closeSync (fd);
+
