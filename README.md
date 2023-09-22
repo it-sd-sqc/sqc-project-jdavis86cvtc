@@ -17,3 +17,4 @@ erDiagram
     CHAPTER ||--o{ TITLE : "has"
     CHAPTER ||--o{ BODY : "contains"
 
+Elijah can handle rejection
