@@ -1,7 +1,7 @@
 const lightSwitch = document.getElementById('style-toggle')
 
 lightSwitch.addEventListener('click', function (event) {
-  if (document.body.classList != 'dark') {
+  if (document.body.classList !== 'dark') {
     document.body.classList.add('dark')
     document.body.children[1].classList.add('dark')
     document.body.children[1].style = 'border: 1px solid #fff;'

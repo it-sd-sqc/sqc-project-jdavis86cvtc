@@ -2,26 +2,31 @@
   "name": "SQC Project",
   "type": "module",
   "version": "1.0.0",
-  "description": "Jasper Davis",
+  "description": "Kevin Harris",
   "main": "index.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "generate": "node tools/html-to-sql.js && -psql -U postgres -f ./docs/generated-schema.sql",
-    "test": "standard \"**/*.js\" && stylelint \"**/*.css\" && html-validate \"public/**/*.html\""
+    "generate": "node tools/html-to-sql.js && psql -U postgres -f ./docs/generated-schema.sql",
+    "test": "standard \"**/*.js\" && ejslint \"**/*.ejs\" && stylelint \"**/*.css\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "ejs-lint": "^2.0.0",
     "html-validate": "^8.2.0",
+    "node-html-parser": "^6.1.5",
     "standard": "^17.1.0",
     "stylelint": "^15.10.2",
-    "stylelint-config-standard": "^34.0.0"
+    "stylelint-config-standard": "^34.0.0",
+    "svgoban": "^1.0.0"
   },
   "dependencies": {
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
     "express": "^4.18.2",
-    "node-html-parser": "^6.1.10"
+    "pg": "^8.11.3"
   }
 }
