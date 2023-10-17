@@ -1,4 +1,3 @@
-/* Reset some default styles */
 body,
 h1,
 h2,
@@ -10,56 +9,46 @@ li {
   padding: 0;
 }
 
-/* Set a background color for the body */
 body {
   background-color: #f0f0f0;
   font-family: Arial, sans-serif;
-  font-size: 16px;
+  font-size: 1rem;
 }
 
-/* Style the header and navigation */
 header {
   background-color: black;
   color: #fff;
   padding: 1rem;
-  /* Responsive padding using rems */
   text-align: center;
 }
 
 nav ul {
   list-style: none;
   text-align: center;
-  /* Center the navigation links */
   padding: 0.5rem;
-  /* Responsive padding using rems */
+}
+
+li {
+  margin-bottom: 1rem;
 }
 
 nav ul li {
   display: inline;
-  /* Display navigation links as inline blocks */
   margin-right: 1rem;
-  /* Responsive margin using rems */
 }
 
 nav ul li a {
   text-decoration: none;
   color: #fff;
   padding: 0.5rem 1rem;
-  /* Responsive padding using rems */
   display: inline;
-  /* Display anchor links as inline blocks */
 }
 
-/* Style the main content */
 main {
   max-width: 100%;
-  /* Adjust the max-width for responsiveness */
   margin: 2rem auto;
-  /* Responsive margin using rems */
   padding: 2rem;
-  /* Responsive padding using rems */
   background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 article {
@@ -68,39 +57,27 @@ article {
 
 h2 {
   font-size: 1.5rem;
-  /* Responsive font size using rems */
   margin-bottom: 1rem;
-  /* Responsive margin using rems */
 }
 
 ol {
   list-style-type: decimal;
   margin-left: 1rem;
-  /* Responsive margin using rems */
 }
 
-li {
-  margin-bottom: 1rem;
-  /* Responsive margin using rems */
-}
 
-/* Style the "Next" link */
+
 .step {
   display: inline;
-  /* Display "Next" link as inline block */
   background-color: black;
   color: #fff;
   padding: 0.5rem 1rem;
-  /* Responsive padding using rems */
   text-decoration: none;
   border-radius: 5px;
   margin-top: 2rem;
-  /* Responsive margin using rems */
   text-align: center;
-  /* Center the "Next" link */
 }
 
-/* Style the dark mode toggle */
 #style-toggle {
   text-decoration: none;
   color: black;
@@ -111,5 +88,6 @@ li {
 .dark {
   background-color: black;
   color: #fff;
-  font-size: 16px;
+  font-size: 1rem;
+
 }
