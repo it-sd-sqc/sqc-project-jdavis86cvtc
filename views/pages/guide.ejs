@@ -4,10 +4,10 @@
   <%- body %>
   <footer>
   <% if (id > 1) { %>
-    <a href="/guide/<%= (id - 1) %>">Prev</a>
+    <a class="step" href="/guide/<%= (id - 1) %>">Prev</a>
   <% } %>
   <% if (id < total) { %>
-    <a href="/guide/<%= (id + 1) %>">Next</a>
+    <a class="step" href="/guide/<%= (id + 1) %>">Next</a>
   <% } %>
   </footer>
 </article>

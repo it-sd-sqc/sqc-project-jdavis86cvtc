@@ -2,8 +2,8 @@
   "name": "SQC Project",
   "type": "module",
   "version": "1.0.0",
-  "description": "Kevin Harris",
-  "main": "index.js",
+  "description": "Jasper Davis",
+  "main": "index.ejs",
   "directories": {
     "doc": "docs"
   },

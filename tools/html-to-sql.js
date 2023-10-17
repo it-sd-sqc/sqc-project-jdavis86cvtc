@@ -2,9 +2,9 @@ import { closeSync, openSync, readFileSync, writeFileSync } from 'node:fs'
 import { parse } from 'node-html-parser'
 
 const srcPath =
-  'C:/Users/jaspe/Documents/CVTC/SQC/sqc-project-jdavis86cvtc/data/Economic-Consequences.html'
+  'data/Economic-Consequences.html'
 const dstPath =
-  'C:/Users/jaspe/Documents/CVTC/SQC/sqc-project-jdavis86cvtc/docs/generated-schema.sql'
+  'docs/generated-schema.sql'
 const chapterIds = [
   'CHAPTER_I',
   'CHAPTER_II',
