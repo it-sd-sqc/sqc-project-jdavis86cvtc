@@ -1,4 +1,20 @@
-# Your project name
-Your given and family name.
+# Note Taker
+Jasper Davis
 
-A one-sentence description of your project.
+This site will be used to take notes.
+
+[https://note-taker-s5rh.onrender.com]
+
+```mermaid
+---
+title: ER diagrams
+---
+erDiagram
+    USER ||--o{ COST : "uses"
+    USER ||--o{ CHAPTER : "creates"
+    COST ||--o{ SUPPLIER : "supplies"
+    COST ||--o{ AMOUNT : "contains"
+    CHAPTER ||--o{ TITLE : "has"
+    CHAPTER ||--o{ BODY : "contains"
+
+Hello from NATHAN!

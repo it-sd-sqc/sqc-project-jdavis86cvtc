@@ -129,7 +129,7 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# macOS folders
+# macOS
 .DS_Store
 
 # vim

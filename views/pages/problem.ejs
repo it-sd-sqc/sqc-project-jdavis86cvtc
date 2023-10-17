@@ -1,0 +1,14 @@
+<%- include('../shared/header.ejs') _%>
+<article>
+  <h2><%= group %></h2>
+  <%- problem %>
+  <p class="instructions"><span class="firstword"><%= to_play %></span> to play.</p>
+  <details>
+    <summary>Toggle solution</summary>
+    <%- solutions %>
+  </details>
+  <footer>
+    <a href="/problem">Another problem</a>
+  </footer>
+</article>
+<%- include('../shared/footer.ejs') _%>
